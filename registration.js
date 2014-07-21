@@ -22,8 +22,7 @@ function updateAuctUser(user, userMessage, cb) {
   db.insertAuctionUser(user, cb);
 }
 
-module.exports = {
-  invoice: function(user, cb) {
+function addUser(user, cb) {
     // validation
     if (!user) { return cb({message: 'Not Logged In.'}); }
     // Add auction user
@@ -40,8 +39,8 @@ module.exports = {
       if (err) {
         if (err.error && err.error === 'conflict' ) {
           // Harmless collision
-          console.log('DEBUG registration.invoice() Document update conflict:');
-          return cb({message: 'You clicked Register too fast.'});
+          console.log('DEBUG registration.addUser() Document update conflict:');
+          return cb({message: 'You clicked Register too fast.  Reload the homepage.'});
         }
         else {
           console.log(err);
@@ -64,13 +63,13 @@ module.exports = {
             return cb({message: 'Temporary failure: createInvoice failed to submit the invoice to Baron.  After this is fixed the invoice will be submitted and you will receive an e-mail.'});
           }
           else {
-            this.completeInvoice(null, result);
+            completeInvoice(null, result);
           }
         });
       }
     });
-  },
-  completeInvoice: function (err, result) {
+}
+function completeInvoice(err, result) {
     // build registration email
     var data = {
       invoiceId: result.id,
@@ -116,5 +115,9 @@ module.exports = {
     function() {
       return;
     });
-  }
+}
+
+module.exports = {
+  addUser: addUser,
+  completeInvoice: completeInvoice
 };
